@@ -1,29 +1,11 @@
 <?php
 include '../config.php';
 
-// Lấy danh sách sản phẩm từ database
 $sql = "SELECT * FROM item_sale";
 $result = $conn->query($sql);
 
 if (!$result) {
     die("Lỗi truy vấn: " . $conn->error);
-}
-
-// Xử lý thêm sản phẩm nếu có request POST
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $item_code = $_POST['item_code'];
-    $item_name = $_POST['item_name'];
-    $quantity = $_POST['quantity'];
-    $expired_date = $_POST['expired_date'];
-    $note = $_POST['note'];
-
-    $sql_insert = "INSERT INTO item_sale (item_code, item_name, quantity, expired_date, note) 
-                   VALUES ('$item_code', '$item_name', '$quantity', '$expired_date', '$note')";
-    if ($conn->query($sql_insert) === TRUE) {
-        echo "<script>alert('Thêm sản phẩm thành công!'); window.location.href='list_item.php';</script>";
-    } else {
-        echo "Lỗi: " . $conn->error;
-    }
 }
 ?>
 
@@ -34,51 +16,48 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Danh sách sản phẩm</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body { background-color: #f4f7f9; }
+        .table th { background-color: #007bff; color: white; }
+        .table tbody tr:hover { background-color: #cce5ff; }
+        .btn-edit { background-color: #007bff; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; }
+        .btn-delete { background-color: #dc3545; color: white; padding: 5px 10px; border-radius: 5px; text-decoration: none; }
+        .btn-add { background-color: #28a745; color: white; padding: 10px; border-radius: 5px; text-decoration: none; font-weight: bold; }
+    </style>
 </head>
 <body>
     <div class="container mt-4">
-        <h3 class="text-center text-warning mt-3">Danh sách sản phẩm</h3>
-        <a href="add_item.php" class="btn btn-danger mb-3">Thêm sản phẩm mới</a>
+        <h3 class="text-center text-warning">📋 Danh sách sản phẩm</h3>
+        <div class="text-end mb-3">
+            <a href="add_item.php" class="btn-add">➕ Thêm sản phẩm mới</a>
+        </div>
         <table class="table table-bordered text-center">
             <thead>
                 <tr>
-                    <th>Id</th>
-                    <th>Mã Sản Phẩm</th>
-                    <th>Tên Sản Phẩm</th>
+                    <th>#</th>
+                    <th>Mã SP</th>
+                    <th>Tên SP</th>
                     <th>Số Lượng</th>
-                    <th>Hạn Sử Dụng</th>
+                    <th>HSD</th>
                     <th>Ghi Chú</th>
                     <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
-                <?php 
-                if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) { ?>
-                        <tr>
-                            <td><?= $row['id'] ?></td>
-                            <td><?= $row['item_code'] ?></td>
-                            <td><?= $row['item_name'] ?></td>
-                            <td><?= $row['quantity'] ?></td>
-                            <td><?= date('d/m/Y', strtotime($row['expired_date'])) ?></td>
-                            <td><?= $row['note'] ?></td>
-                            <td>
-                                <a href="edit_item.php?id=<?= $row['id'] ?>" class="text-warning">
-                                    <i class="fas fa-edit"></i> Sửa
-                                </a>
-                                &nbsp;|&nbsp;
-                                <a href="delete_item.php?id=<?= $row['id'] ?>" class="text-danger" 
-                                    onclick="return confirm('Bạn có chắc muốn xóa sản phẩm này?')">
-                                    <i class="fas fa-trash"></i> Xóa
-                                </a>
-                            </td>           
-                        </tr>
-                    <?php } 
-                } else {
-                    echo "<tr><td colspan='7' class='text-center text-danger'>Không có sản phẩm nào!</td></tr>";
-                }
-                ?>
+                <?php while ($row = $result->fetch_assoc()) { ?>
+                    <tr>
+                        <td><?= $row['id'] ?></td>
+                        <td><?= htmlspecialchars($row['item_code']) ?></td>
+                        <td><?= htmlspecialchars($row['item_name']) ?></td>
+                        <td><?= htmlspecialchars($row['quantity']) ?></td>
+                        <td><?= date('d/m/Y', strtotime($row['expired_date'])) ?></td>
+                        <td><?= htmlspecialchars($row['note']) ?></td>
+                        <td>
+                            <a href="edit_item.php?id=<?= $row['id'] ?>" class="btn-edit">✏️ Sửa</a>
+                            <a href="delete_item.php?id=<?= $row['id'] ?>" class="btn-delete" onclick="return confirm('Bạn có chắc không?')">❌ Xóa</a>
+                        </td>
+                    </tr>
+                <?php } ?>
             </tbody>
         </table>
     </div>
