@@ -80,7 +80,7 @@
 
     <!-- 🔹 Footer -->
     <div class="footer text-center p-3 mt-4">
-        Số 8, Tôn Thất Thuyết, Cầu Giấy, Hà Nội | © 2025 V_Store
+        Số 113 Trường Chinh - Hai Bà Chưng - Hà Nội | © 2025 V_Store
     </div>
 
 </body>
